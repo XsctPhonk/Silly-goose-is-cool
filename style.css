@@ -1,0 +1,61 @@
+body {
+  margin: 0;
+  background: black;
+  color: #00ffcc;
+  font-family: monospace;
+}
+
+.container {
+  text-align: center;
+  padding: 2rem;
+}
+
+.main-title {
+  font-size: 3rem;
+  color: #0ff;
+  margin-bottom: 1rem;
+}
+
+.glitch-text {
+  font-size: 1.2rem;
+  color: #ff00cc;
+  margin-bottom: 0.5rem;
+  animation: flicker 3s infinite;
+}
+
+@keyframes flicker {
+  0%   { opacity: 1; }
+  50%  { opacity: 0.2; }
+  100% { opacity: 1; }
+}
+
+.chatbox {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.chatlog {
+  background: #111;
+  padding: 1rem;
+  border-radius: 8px;
+  height: 200px;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  border: 1px solid #0ff;
+}
+
+input[type='text'] {
+  width: 70%;
+  padding: 0.5rem;
+  border: 1px solid #0ff;
+  background: #000;
+  color: #0ff;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  background: #0ff;
+  color: #000;
+  border: none;
+  cursor: pointer;
+}

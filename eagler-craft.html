@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>DataDagger - Eaglercraft Client Selector</title>
+<style>
+  body {
+    background: #0f0f1a;
+    color: #9affff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+  }
+  select, button {
+    padding: 0.5rem;
+    margin: 1rem 0;
+    background: #111122;
+    border: 1px solid #3ad6ff;
+    color: #9affff;
+    font-size: 1rem;
+    border-radius: 4px;
+  }
+  iframe {
+    border: none;
+    width: 100%;
+    max-width: 960px;
+    height: 600px;
+    border-radius: 6px;
+    box-shadow: 0 0 20px #00ffffaa;
+  }
+</style>
+</head>
+<body>
+  <h1>DataDagger - Eaglercraft Client</h1>
+  <label for="client-select">Choose a client:</label>
+  <select id="client-select">
+    <option value="https://eaglercraft.com/">Official Eaglercraft</option>
+    <option value="https://play.eaglercraft.org/">Eaglercraft Play</option>
+    <option value="https://eaglercraft.net/">Eaglercraft.net</option>
+    <option value="https://classic.eaglercraft.io/">Classic Eaglercraft</option>
+  </select>
+  <button id="load-btn">Load Client</button>
+
+  <iframe id="client-frame" src="https://eaglercraft.com/" allowfullscreen sandbox="allow-scripts allow-same-origin allow-modals"></iframe>
+
+  <script>
+    const select = document.getElementById('client-select');
+    const iframe = document.getElementById('client-frame');
+    const loadBtn = document.getElementById('load-btn');
+
+    loadBtn.addEventListener('click', () => {
+      iframe.src = select.value;
+    });
+  </script>
+</body>
+</html>

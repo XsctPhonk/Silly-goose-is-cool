@@ -1,1 +1,1 @@
-# Silly-goose-is-cool
+Deployment availible on vercel and netlify

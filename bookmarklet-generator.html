@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DataDagger - Bookmarklet Generator</title>
+  <style>
+    body {
+      background: #0a0a12;
+      color: #00ffcc;
+      font-family: 'Courier New', Courier, monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 100vh;
+      padding: 30px;
+      user-select: none;
+    }
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5em;
+      text-shadow: 0 0 8px #00ffccee;
+    }
+    input, textarea {
+      background: #011f2f;
+      border: 1px solid #00ffcc;
+      border-radius: 8px;
+      color: #00ffcc;
+      font-family: monospace;
+      font-size: 1rem;
+      padding: 12px;
+      width: 90vw;
+      max-width: 600px;
+      box-sizing: border-box;
+      margin-bottom: 15px;
+      outline: none;
+    }
+    button {
+      background: #ff00cc;
+      border: none;
+      color: white;
+      padding: 12px 30px;
+      font-size: 1.2rem;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 15px #ff00ccaa;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background: #e600b8;
+    }
+    textarea {
+      resize: none;
+      height: 100px;
+    }
+  </style>
+</head>
+<body>
+  <h1>DataDagger Bookmarklet Generator</h1>
+  <input id="bm-input" type="text" placeholder="Describe the bookmarklet you want (e.g. Change background to red)" />
+  <button id="generate-btn">Generate Bookmarklet</button>
+  <textarea id="bm-output" readonly placeholder="Your bookmarklet code will appear here..."></textarea>
+
+  <script>
+    const input = document.getElementById('bm-input');
+    const output = document.getElementById('bm-output');
+    const btn = document.getElementById('generate-btn');
+
+    btn.onclick = () => {
+      const text = input.value.trim().toLowerCase();
+
+      if (!text) {
+        output.value = 'Please enter a description.';
+        return;
+      }
+
+      // Basic simple mapping of some commands
+      let bmCode = '';
+
+      if (text.includes('background') && text.includes('red')) {
+        bmCode = `javascript:(function(){document.body.style.backgroundColor='red';})();`;
+      } else if (text.includes('hide images') || text.includes('remove images')) {
+        bmCode = `javascript:(function(){document.querySelectorAll('img').forEach(img=>img.style.display='none');})();`;
+      } else if (text.includes('alert')) {
+        const alertText = input.value.slice(input.value.indexOf('alert') + 5).trim() || 'Hello from DataDagger!';
+        bmCode = `javascript:(function(){alert(${JSON.stringify(alertText)});})();`;
+      } else if (text.includes('dark mode')) {
+        bmCode = `javascript:(function(){document.body.style.backgroundColor='#111';document.body.style.color='#eee';})();`;
+      } else {
+        bmCode = `javascript:(function(){console.log('Sorry, this generator cannot handle that request yet.');})();`;
+      }
+
+      output.value = bmCode;
+    };
+  </script>
+</body>
+</html>

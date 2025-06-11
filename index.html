@@ -25,6 +25,18 @@
   <div id="emu-container" class="chatbox"></div>
 <script src="ghostemulator.js"></script>
 <script>initEmulatorUI();</script>
+  <script>
+  function copyBookmarklet() {
+    const output = document.getElementById("bm-output");
+    const text = output.textContent;
+    if (!text) return alert("Nothing to copy!");
+
+    navigator.clipboard.writeText(text).then(() => {
+      alert("Bookmarklet copied!");
+    });
+  }
+</script>
+<button onclick="copyBookmarklet()" style="margin-top: 0.5em;">Copy Bookmarklet</button>
 </body>
 </html>
 

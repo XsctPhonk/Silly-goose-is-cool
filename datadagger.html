@@ -41,5 +41,30 @@
   ⚡ Launch Ultraviolet Proxy
 </button>
 </body>
+  <script>
+  function loadGame() {
+    const rom = document.getElementById('game-select').value;
+    const iframe = document.createElement('iframe');
+    iframe.src = `https://www.emulatorjs.com/loader?rom=${encodeURIComponent(rom)}`;
+    iframe.style.width = "100%";
+    iframe.style.height = "500px";
+    iframe.style.border = "none";
+    const container = document.getElementById('emulator-container');
+    container.innerHTML = '';
+    container.appendChild(iframe);
+  }
+</script>
+
+  <section id="emulator-section">
+  <h2>Game Emulator</h2>
+  <label for="game-select">Choose a GBA game:</label>
+  <select id="game-select">
+    <option value="roms/pokemon.gba">Pokemon FireRed</option>
+    <option value="roms/zelda.gba">Zelda - Minish Cap</option>
+  </select>
+  <button onclick="loadGame()">Load Game</button>
+  <div id="emulator-container" style="margin-top: 20px;"></div>
+</section>
+
 </html>
 

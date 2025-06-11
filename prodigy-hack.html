@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prodigy Hack - DataDagger</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  body {
+    margin: 0; padding: 0;
+    background: #0a0a1a;
+    color: #00ffcc;
+    font-family: 'Press Start 2P', cursive;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    user-select: none;
+  }
+  .login, .game, .console {
+    background: #011f2f;
+    border: 2px solid #00ffcc;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px #00ffccaa;
+    max-width: 600px;
+    width: 90vw;
+  }
+  .login {
+    text-align: center;
+    margin-top: 3rem;
+  }
+  input {
+    width: 90%;
+    margin: 10px 0;
+    padding: 8px;
+    background: #022f3f;
+    border: none;
+    color: #00ffcc;
+    font-family: 'Press Start 2P', monospace;
+    border-radius: 6px;
+  }
+  button {
+    background: #00ffcc;
+    border: none;
+    color: #011f2f;
+    font-weight: bold;
+    font-family: 'Press Start 2P', monospace;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 6px;
+    margin-top: 10px;
+  }
+  h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .banner {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #ff0080;
+    animation: flicker 1.5s infinite alternate;
+    text-align: center;
+  }
+  @keyframes flicker {
+    0%, 100% {opacity: 1;}
+    50% {opacity: 0.6;}
+  }
+  .hack-buttons button {
+    margin: 5px;
+  }
+  .stats, .battle, .pets-list {
+    margin-top: 15px;
+    font-size: 14px;
+  }
+  .pets-list ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .console {
+    margin-top: 20px;
+    height: 160px;
+    overflow-y: auto;
+    font-size: 12px;
+    background: #000a1a;
+    white-space: pre-wrap;
+    font-family: monospace;
+  }
+  .battle-status {
+    margin-top: 15px;
+    border-top: 1px solid #00ffcc44;
+    padding-top: 10px;
+  }
+</style>
+</head>
+<body>
+
+  <div class="login">
+    <h1>Prodigy Math - Login</h1>
+    <input type="text" id="username" placeholder="Username" autocomplete="off" />
+    <input type="password" id="password" placeholder="Password" autocomplete="off" />
+    <button id="login-btn">Login</button>
+  </div>
+
+  <div class="game" style="display:none;">
+    <h1>Welcome, <span id="player-name"></span>!</h1>
+
+    <div class="stats">
+      <p><strong>Level:</strong> <span id="player-level">1</span></p>
+      <p><strong>XP:</strong> <span id="player-xp">0</span></p>
+      <p><strong>HP:</strong> <span id="player-hp">100</span> / 100</p>
+    </div>
+
+    <div class="pets-list">
+      <h3>Pets:</h3>
+      <ul id="pets-ul"></ul>
+    </div>
+
+    <div class="battle">
+      <h3>Battle</h3>
+      <p><strong>Enemy HP:</strong> <span id="enemy-hp">100</span> / 100</p>
+      <button id="attack-btn">Attack Enemy (10 dmg)</button>
+      <button id="heal-btn">Heal Self (10 HP)</button>
+    </div>
+
+    <div class="hack-buttons" style="margin-top:20px;">
+      <button id="unlock-items-btn">Unlock All Items</button>
+      <button id="infinite-xp-btn">Infinite XP</button>
+      <button id="level-up-btn">Level Up Instantly</button>
+      <button id="show-credits-btn">Show Credits</button>
+    </div>
+
+    <div class="banner">You won't get banned! 😉</div>
+
+    <div class="console" id="console-output"></div>
+  </div>
+
+<script>
+  const loginBtn = document.getElementById('login-btn');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const gameDiv = document.querySelector('.game');
+  const loginDiv = document.querySelector('.login');
+  const playerNameSpan = document.getElementById('player-name');
+  const playerLevelSpan = document.getElementById('player-level');
+  const playerXpSpan = document.getElementById('player-xp');
+  const playerHpSpan = document.getElementById('player-hp');
+  const enemyHpSpan = document.getElementById('enemy-hp');
+  const petsUl = document.getElementById('pets-ul');
+  const consoleOutput = document.getElementById('console-output');
+  const attackBtn = document.getElementById('attack-btn');
+  const healBtn = document.getElementById('heal-btn');
+
+  let player = {
+    name: '',
+    level: 1,
+    xp: 0,
+    hp: 100,
+    maxHp: 100,
+    itemsUnlocked: false,
+    pets: []
+  };
+
+  let enemy = {
+    hp: 100,
+    maxHp: 100
+  };
+
+  function logToConsole(text) {
+    consoleOutput.textContent += text + '\n';
+    consoleOutput.scrollTop = consoleOutput.scrollHeight;
+  }
+
+  function updateUI() {
+    playerLevelSpan.textContent = player.level;
+    playerXpSpan.textContent = player.xp === Infinity ? '∞' : player.xp;
+    playerHpSpan.textContent = player.hp;
+    enemyHpSpan.textContent = enemy.hp;
+
+    // Update pets list
+    petsUl.innerHTML = '';
+    if (player.pets.length === 0) {
+      petsUl.innerHTML = '<li>No pets yet. Use bookmarklets to get pets!</li>';
+    } else {
+      player.pets.forEach(pet => {
+        const li = document.createElement('li');
+        li.textContent = pet;
+        petsUl.appendChild(li);
+      });
+    }
+  }
+
+  function attackEnemy(dmg) {
+    if (enemy.hp <= 0) {
+      logToConsole("Enemy is already defeated!");
+      return;
+    }
+    enemy.hp -= dmg;
+    if (enemy.hp < 0) enemy.hp = 0;
+    logToConsole(`You attacked enemy for ${dmg} damage.`);
+    if (enemy.hp === 0) {
+      logToConsole("Enemy defeated! 🎉");
+    }
+    updateUI();
+  }
+
+  function healPlayer(amount) {
+    player.hp += amount;
+    if (player.hp > player.maxHp) player.hp = player.maxHp;
+    logToConsole(`You healed yourself for ${amount} HP.`);
+    updateUI();
+  }
+
+  loginBtn.onclick = () => {
+    const username = usernameInput.value.trim();
+    const password = passwordInput.value.trim();
+    if (!username || !password) {
+      alert('Please enter username and password');
+      return;
+    }
+    player.name = username;
+    loginDiv.style.display = 'none';
+    gameDiv.style.display = 'block';
+    playerNameSpan.textContent = player.name;
+    logToConsole(`Logged in as ${player.name}`);
+    logToConsole('Ready to hack the math battle!');
+    updateUI();
+  };
+
+  document.getElementById('unlock-items-btn').onclick = () => {
+    if (!player.itemsUnlocked) {
+      player.itemsUnlocked = true;
+      logToConsole('All items unlocked! 🎉');
+      alert('All items unlocked!');
+    } else {
+      logToConsole('Items already unlocked.');
+    }
+  };
+
+  document.getElementById('infinite-xp-btn').onclick = () => {
+    player.xp = Infinity;
+    updateUI();
+    logToConsole('Infinite XP granted!');
+  };
+
+  document.getElementById('level-up-btn').onclick = () => {
+    player.level++;
+    updateUI();
+    logToConsole(`Leveled up to ${player.level}!`);
+  };
+
+  document.getElementById('show-credits-btn').onclick = () => {
+    alert('Fake Prodigy Hack by DataDagger AI\nEnjoy hacking safely!');
+    logToConsole('Displayed credits');
+  };
+
+  attackBtn.onclick = () => {
+    attackEnemy(10);
+  };
+
+  healBtn.onclick = () => {
+    healPlayer(10);
+  };
+
+  // Bookmarklet hack functions exposed globally:
+
+  window.addPet = function(petName) {
+    if (!petName) {
+      logToConsole('addPet() requires a pet name.');
+      return;
+    }
+    if (player.pets.includes(petName)) {
+      logToConsole(`You already have the pet: ${petName}`);
+      return;
+    }
+    player.pets.push(petName);
+    logToConsole(`Pet added: ${petName} 🐾`);
+    updateUI();
+  };
+
+  window.boostXP = function(amount) {
+    amount = Number(amount);
+    if (isNaN(amount) || amount <= 0) {
+      logToConsole('boostXP(amount) requires a positive number.');
+      return;
+    }
+    if (player.xp === Infinity) {
+      logToConsole('XP is already infinite!');
+      return;
+    }
+    player.xp += amount;
+    logToConsole(`XP boosted by ${amount}. Total XP: ${player.xp}`);
+    updateUI();
+  };
+
+  window.attackEnemyWithDamage = function(dmg) {
+    dmg = Number(dmg);
+    if (isNaN(dmg) || dmg <= 0) {
+      logToConsole('attackEnemyWithDamage(dmg) requires a positive number.');
+      return;
+    }
+    attackEnemy(dmg);
+  };
+
+  window.healPlayerBy = function(amount) {
+    amount = Number(amount);
+    if (isNaN(amount) || amount <= 0) {
+      logToConsole('healPlayerBy(amount) requires a positive number.');
+      return;
+    }
+    healPlayer(amount);
+  };
+
+  // Show usage instructions in console at load:
+  window.addEventListener('load', () => {
+    logToConsole('Welcome to Fake Prodigy Hack!');
+    logToConsole('Use these bookmarklet functions to hack the game:');
+    logToConsole('addPet("PetName") - Add a pet');
+    logToConsole('boostXP(amount) - Add XP');
+    logToConsole('attackEnemyWithDamage(amount) - Damage enemy');
+    logToConsole('healPlayerBy(amount) - Heal yourself');
+    logToConsole('Example bookmarklet: javascript:addPet("Dragon");void(0);');
+  });
+
+</script>
+
+</body>
+</html>
